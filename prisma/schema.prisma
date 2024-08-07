@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model Konsumen {
+  id         Int       @id @default(autoincrement())
+  nama       String
+  nik        String    @unique
+  tanggalLahir DateTime
+  statusPerkawinan String
+  dataPasangan String?
+  salesDealer SalesDealer? @relation(fields: [salesDealerId], references: [id])
+  salesDealerId Int?
+  pengajuan   Pengajuan[]
+}
+
+model SalesDealer {
+  id         Int        @id @default(autoincrement())
+  nama       String
+  konsumen   Konsumen[]
+  marketing  Marketing? @relation(fields: [marketingId], references: [id])
+  marketingId Int?
+}
+
+model Marketing {
+  id         Int         @id @default(autoincrement())
+  nama       String
+  salesDealers SalesDealer[]
+  pengajuan  Pengajuan[]
+}
+
+model Pengajuan {
+  id             Int       @id @default(autoincrement())
+  konsumen       Konsumen  @relation(fields: [konsumenId], references: [id])
+  konsumenId     Int
+  marketing      Marketing @relation(fields: [marketingId], references: [id])
+  marketingId    Int
+  approvalStatus Boolean   @default(false)
+  tanggalPengajuan DateTime @default(now())
+  dokumen        Dokumen[]
+}
+
+model Dokumen {
+  id          Int       @id @default(autoincrement())
+  pengajuan   Pengajuan @relation(fields: [pengajuanId], references: [id])
+  pengajuanId Int
+  jenis       String
+  url         String
+  statusTTD   Boolean   @default(false)
+}
