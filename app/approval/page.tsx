@@ -15,7 +15,7 @@ export type Pengajuan = {
     salesDealerId: number | null;
   };
   approvalStatus: boolean;
-  tanggalPengajuan: string;
+  tanggalPengajuan: Date;
 };
 
 const Approve = () => {
